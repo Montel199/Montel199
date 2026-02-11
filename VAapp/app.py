@@ -3,16 +3,18 @@ import streamlit.components.v1 as components
 
 st.set_page_config(page_title="For Halima", layout="centered")
 
-# Added Feature 2 (Sparkle Trail) and Feature 3 (Talking No Button)
 custom_content = """
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap');
 
-    * { cursor: none; } 
+    * { cursor: none; -webkit-tap-highlight-color: transparent; user-select: none; } 
 
     body {
         margin: 0;
-        background: radial-gradient(circle at center, #2d0b1e 0%, #000000 100%);
+        /* Feature 1: Animated Mesh Gradient Background */
+        background: linear-gradient(45deg, #0f0c29, #302b63, #24243e, #4a1936);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
         overflow: hidden;
         height: 100vh;
         width: 100vw;
@@ -22,151 +24,142 @@ custom_content = """
         font-family: 'Poppins', sans-serif;
     }
 
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Custom Heart Cursor & Sparkle Trail */
     #cursor {
         position: fixed;
-        width: 15px;
-        height: 15px;
+        width: 18px; height: 18px;
         background: #ff69b4;
         border-radius: 50%;
         pointer-events: none;
         z-index: 9999;
         transform: translate(-50%, -50%);
-        box-shadow: 0 0 20px #ff69b4, 0 0 40px #ff1493;
+        box-shadow: 0 0 25px #ff69b4, 0 0 50px #ff1493;
     }
 
-    /* Feature 2: Sparkle Particles Style */
     .sparkle {
         position: fixed;
-        width: 6px;
-        height: 6px;
-        background: #ff69b4;
+        width: 8px; height: 8px;
+        background: rgba(255, 105, 180, 0.8);
         border-radius: 50%;
         pointer-events: none;
         z-index: 9998;
-        animation: fadeOut 1s forwards;
+        animation: fadeOut 1.2s forwards;
     }
-    @keyframes fadeOut {
-        to { opacity: 0; transform: scale(0.1); }
-    }
+    @keyframes fadeOut { to { opacity: 0; transform: scale(0.2) translateY(-20px); } }
 
-    /* --- BACKGROUND ELEMENTS --- */
-    .shooting-star {
-        position: absolute;
-        width: 2px;
-        height: 2px;
-        background: white;
-        box-shadow: 0 0 10px 2px white;
-        animation: shoot 4s linear infinite;
-    }
-    @keyframes shoot {
-        0% { transform: translate(100vw, -10vh) rotate(-45deg); opacity: 1; }
-        20% { transform: translate(50vw, 40vh) rotate(-45deg); opacity: 0; }
-        100% { opacity: 0; }
-    }
-
-    /* --- MAIN CARD --- */
+    /* Feature 2: Glassmorphism Card 3.0 */
     .card {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(20px);
-        padding: 40px 20px;
-        border-radius: 40px;
-        border: 2px solid rgba(255, 105, 180, 0.4);
-        box-shadow: 0 0 50px rgba(255, 20, 147, 0.3);
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(30px) saturate(150%);
+        -webkit-backdrop-filter: blur(30px);
+        padding: 50px 25px;
+        border-radius: 50px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 25px 45px rgba(0,0,0,0.4), inset 0 0 15px rgba(255,255,255,0.1);
         text-align: center;
-        width: 85%;
-        max-width: 400px;
+        width: 88%;
+        max-width: 420px;
         z-index: 10;
         position: relative;
-        transition: 0.5s;
     }
 
     h1 {
         font-family: 'Dancing Script', cursive;
-        font-size: 2.5rem;
-        color: white;
-        text-shadow: 0 0 15px #ff69b4;
+        font-size: 2.8rem;
+        color: #fff;
+        margin: 15px 0;
+        text-shadow: 0 0 20px rgba(255, 105, 180, 0.8);
     }
 
-    /* --- BUTTONS --- */
+    /* Neumorphic Buttons */
     #yes-btn {
-        background: linear-gradient(45deg, #ff1493, #ff4b4b);
+        background: #ff1493;
         color: white;
-        padding: 15px 40px;
+        padding: 18px 50px;
         border-radius: 50px;
         border: none;
-        font-weight: bold;
-        box-shadow: 0 10px 20px rgba(255, 20, 147, 0.4);
-        animation: heartbeat 1.5s infinite;
-        cursor: pointer;
+        font-weight: 600;
+        font-size: 1.3rem;
+        letter-spacing: 1px;
+        box-shadow: 0 10px 30px rgba(255, 20, 147, 0.5);
+        transition: 0.3s;
+        animation: pulseHeart 2s infinite;
     }
-    @keyframes heartbeat {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
+    @keyframes pulseHeart {
+        0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(255, 20, 147, 0.5); }
+        50% { transform: scale(1.05); box-shadow: 0 15px 45px rgba(255, 20, 147, 0.7); }
     }
 
     #no-btn {
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        padding: 10px 30px;
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255,255,255,0.6);
+        padding: 12px 35px;
         border-radius: 50px;
-        border: 1px solid rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255,0.1);
         position: absolute;
-        transition: 0.2s;
-        white-space: nowrap;
     }
 
-    /* --- SLIDE DRAWER --- */
+    /* Feature 3: Side Drawer Redesign */
     #side-drawer {
         position: fixed;
-        right: -100%;
-        top: 0;
-        width: 80%;
-        height: 100%;
-        background: linear-gradient(to left, #ff1493, #4a1936);
+        right: -100%; top: 0;
+        width: 90%; height: 100%;
+        background: rgba(15, 12, 41, 0.95);
+        backdrop-filter: blur(15px);
         z-index: 1000;
-        transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+        transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding: 30px;
-        box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        padding: 40px;
+        border-left: 3px solid #ff1493;
     }
     #side-drawer.open { right: 0; }
 
-    .close-btn {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        font-size: 30px;
-        color: white;
+    .love-meter-container {
+        position: fixed;
+        top: 20px; left: 10%; width: 80%; height: 6px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        z-index: 100;
+    }
+    #love-meter-fill {
+        height: 100%; width: 10%;
+        background: linear-gradient(to right, #ff1493, #ff4b2b);
+        transition: width 0.5s ease;
     }
 
-    /* Teddy */
-    .teddy { position: fixed; bottom: 20px; left: 20px; font-size: 80px; z-index: 100; animation: sway 3s infinite; }
-    @keyframes sway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+    .teddy { position: fixed; bottom: 20px; left: 20px; font-size: 80px; z-index: 100; filter: drop-shadow(0 0 15px rgba(0,0,0,0.5)); }
 </style>
 
+<div class="love-meter-container"><div id="love-meter-fill"></div></div>
 <div id="cursor"></div>
 <div id="bg-layer"></div>
 <div class="teddy">🧸</div>
 
 <div id="side-drawer">
-    <div class="close-btn" onclick="toggleDrawer()">×</div>
-    <h1 style="font-size: 2.5rem;">For My Wambooo... ❤️</h1>
-    <p style="color: white; font-size: 1.2rem; line-height: 1.6;">
-        "I just wanted to say that you're the most amazing part of my day. 
-        I don't just want you for Valentine's, I want you for every day after that. 
-        You're my forever choice." 🏹🌹
+    <div style="position:absolute; top:30px; left:30px; color:#ff1493; font-size:40px;" onclick="toggleDrawer()">×</div>
+    <h1 style="text-align:left; color:#ff1493;">My Wambooo... ❤️</h1>
+    <p style="color: #fff; font-size: 1.2rem; line-height: 1.8; font-weight: 300;">
+        You're the melody in my favorite song and the spark in my darkest nights. 
+        Thank you for being exactly who you are. Halima, you have my whole heart, 
+        today and every day after. ✨🌹
     </p>
 </div>
 
 <div class="card" id="main-card">
     <div id="content">
-        <p style="color: #ff69b4; font-size: 1.2rem; letter-spacing: 2px;">HI BEAUTIFUL</p>
-        <h1>Will you be my Valentine, Halima? 🌹</h1>
-        <div style="height: 150px; position: relative; margin-top: 30px;">
-            <button id="yes-btn" onclick="celebrate()">Yes!</button>
+        <p style="color: #ff69b4; font-size: 0.9rem; letter-spacing: 5px; margin-bottom: 0;">PREMIUM COLLECTION</p>
+        <h1>Be my Valentine, Halima?</h1>
+        <div style="height: 180px; position: relative; margin-top: 40px; display: flex; align-items: center; justify-content: center;">
+            <button id="yes-btn" onclick="celebrate()">YES, I WILL!</button>
             <button id="no-btn" onmouseover="moveNo()" ontouchstart="moveNo()">No</button>
         </div>
     </div>
@@ -174,86 +167,76 @@ custom_content = """
 
 <script>
     const cursor = document.getElementById('cursor');
-    
-    // Feature 2: Sparkle Trail Logic
-    document.addEventListener('mousemove', e => {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-        createSparkle(e.clientX, e.clientY);
-    });
+    const meter = document.getElementById('love-meter-fill');
+    let meterWidth = 10;
 
-    // Touch support for Sparkle Trail
+    // Movement & Ripple
+    document.addEventListener('mousemove', e => handleInteraction(e.clientX, e.clientY));
     document.addEventListener('touchmove', e => {
-        const touch = e.touches[0];
-        cursor.style.left = touch.clientX + 'px';
-        cursor.style.top = touch.clientY + 'px';
-        createSparkle(touch.clientX, touch.clientY);
+        handleInteraction(e.touches[0].clientX, e.touches[0].clientY);
     });
 
-    function createSparkle(x, y) {
-        const sparkle = document.createElement('div');
-        sparkle.className = 'sparkle';
-        sparkle.style.left = x + 'px';
-        sparkle.style.top = y + 'px';
-        document.body.appendChild(sparkle);
-        setTimeout(() => sparkle.remove(), 1000);
+    function handleInteraction(x, y) {
+        cursor.style.left = x + 'px';
+        cursor.style.top = y + 'px';
+        createSparkle(x, y);
     }
 
-    // Shooting Stars
-    setInterval(() => {
-        let s = document.createElement('div');
-        s.className = 'shooting-star';
-        s.style.left = Math.random() * 80 + 'vw';
-        s.style.top = Math.random() * 40 + 'vh';
-        document.getElementById('bg-layer').appendChild(s);
-        setTimeout(() => s.remove(), 4000);
-    }, 2000);
+    function createSparkle(x, y) {
+        const s = document.createElement('div');
+        s.className = 'sparkle';
+        s.style.left = x + 'px'; s.style.top = y + 'px';
+        document.body.appendChild(s);
+        setTimeout(() => s.remove(), 1200);
+    }
 
-    // Feature 3: Talking No Button Logic
-    let noMessages = ["No", "Are you sure? 🤨", "Wrong button! ❌", "Try again! 😂", "Halima pls... 🥺", "Nope! 🏃‍♂️"];
+    let noMessages = ["No", "Error 404", "Try Again!", "Not an Option", "Nope!", "Haha No."];
     let noCount = 0;
 
     function moveNo() {
         const btn = document.getElementById('no-btn');
         btn.style.position = 'fixed';
-        btn.style.left = Math.random() * (window.innerWidth - 100) + 'px';
-        btn.style.top = Math.random() * (window.innerHeight - 100) + 'px';
-        
-        // Update button text
+        btn.style.left = Math.random() * (window.innerWidth - 120) + 'px';
+        btn.style.top = Math.random() * (window.innerHeight - 60) + 'px';
         noCount++;
         btn.innerText = noMessages[noCount % noMessages.length];
+        
+        // Fill meter as she tries to click "No"
+        if(meterWidth < 90) {
+            meterWidth += 10;
+            meter.style.width = meterWidth + '%';
+        }
     }
 
-    function toggleDrawer() {
-        document.getElementById('side-drawer').classList.toggle('open');
-    }
+    function toggleDrawer() { document.getElementById('side-drawer').classList.toggle('open'); }
 
     function celebrate() {
+        meter.style.width = '100%';
         document.getElementById('main-card').innerHTML = `
-            <div style="animation: fadeIn 1s;">
-                <h1 style="font-size: 2.2rem;">Good choice baby! ❤️</h1>
-                <p style="color: white; font-size: 1.1rem; margin-bottom: 20px;">I am so lucky to have you.</p>
-                <div style="font-size: 4rem;">💖✨💍</div>
-                <hr style="border: 0; border-top: 1px solid #ff69b4; margin: 20px 0;">
-                <p style="color: #ff69b4;">Guess nini Wambooo? 🤔</p>
-                <button onclick="toggleDrawer()" style="background:#ff69b4; color:white; border:none; width:50px; height:50px; border-radius:50%; font-size:1.5rem; margin-top:10px; cursor:pointer;">?</button>
+            <div style="animation: fadeIn 1.2s cubic-bezier(0.4, 0, 0.2, 1);">
+                <h1 style="font-size: 2.2rem; color: #ff1493;">GOOD CHOICE BABY! ❤️</h1>
+                <p style="color: #fff; font-size: 1.1rem; opacity: 0.8;">I am the luckiest person alive.</p>
+                <div style="font-size: 4.5rem; margin: 25px 0; filter: drop-shadow(0 0 15px #ff1493);">✨💍💖</div>
+                <hr style="border: 0; border-top: 1px solid rgba(255,20,147,0.3); margin: 25px 0;">
+                <p style="color: #ff69b4; font-weight: 600; letter-spacing: 2px;">GUESS NINI WAMBOOO? 🤔</p>
+                <button onclick="toggleDrawer()" style="background:transparent; color:#ff1493; border: 2px solid #ff1493; width:70px; height:70px; border-radius:50%; font-size:2rem; margin-top:15px; cursor:pointer; transition: 0.4s;">?</button>
             </div>
         `;
         
-        // Celebration Hearts
+        // Finale: Continuous Heart & Star Rain
         setInterval(() => {
             const h = document.createElement('div');
-            h.innerHTML = '❤️';
+            h.innerHTML = ['❤️','✨','💖','🌸'][Math.floor(Math.random()*4)];
             h.style.position = 'fixed';
             h.style.left = Math.random() * 100 + 'vw';
             h.style.top = '110vh';
-            h.style.fontSize = Math.random() * 20 + 10 + 'px';
-            h.style.transition = '5s linear';
-            h.style.color = '#ff1493';
+            h.style.fontSize = Math.random() * 30 + 15 + 'px';
+            h.style.transition = (Math.random() * 2 + 3) + 's ease-in';
+            h.style.opacity = Math.random();
             document.body.appendChild(h);
-            setTimeout(() => { h.style.top = '-10vh'; }, 10);
+            setTimeout(() => { h.style.top = '-10vh'; h.style.transform = `rotate(${Math.random()*360}deg)`; }, 50);
             setTimeout(() => h.remove(), 5000);
-        }, 150);
+        }, 100);
     }
 </script>
 """
