@@ -3,10 +3,12 @@ import streamlit.components.v1 as components
 
 st.set_page_config(page_title="For Halima", layout="centered")
 
-# Updated code to match the aesthetic: Teddy, Glowing Borders, and Shooting Stars
+# Final Polish: Custom Cursor, Typewriter Effect, and Interactive Teddy
 custom_content = """
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;600&display=swap');
+
+    * { cursor: none; } /* We will create a custom heart cursor */
 
     body {
         margin: 0;
@@ -20,13 +22,20 @@ custom_content = """
         font-family: 'Poppins', sans-serif;
     }
 
-    /* --- BACKGROUND ANIMATIONS --- */
-    #bg-layer {
+    /* --- CUSTOM HEART CURSOR --- */
+    #cursor {
         position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        z-index: -1;
+        width: 20px;
+        height: 20px;
+        background: #ff69b4;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 15px #ff69b4;
     }
 
+    /* --- BACKGROUND ELEMENTS --- */
     .shooting-star {
         position: absolute;
         width: 2px;
@@ -38,33 +47,45 @@ custom_content = """
         animation: shoot 4s linear infinite;
     }
     @keyframes shoot {
-        0% { transform: translate(100vw, -10vh) rotate(-45deg); opacity: 1; width: 2px; }
-        20% { transform: translate(50vw, 40vh) rotate(-45deg); opacity: 0; width: 100px; }
+        0% { transform: translate(100vw, -10vh) rotate(-45deg); opacity: 1; }
+        20% { transform: translate(50vw, 40vh) rotate(-45deg); opacity: 0; }
         100% { opacity: 0; }
     }
 
-    /* --- THE TEDDY BEAR --- */
-    .teddy {
+    /* --- TEDDY WITH SPEECH BUBBLE --- */
+    .teddy-container {
         position: fixed;
         bottom: 20px;
         left: 20px;
-        font-size: 80px;
         z-index: 100;
+    }
+    .teddy {
+        font-size: 80px;
         animation: sway 3s ease-in-out infinite;
-        filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
     }
-    @keyframes sway {
-        0%, 100% { transform: rotate(-5deg) translateY(0); }
-        50% { transform: rotate(5deg) translateY(-10px); }
+    .bubble {
+        position: absolute;
+        top: -40px;
+        left: 60px;
+        background: white;
+        color: #333;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: bold;
+        white-space: nowrap;
+        opacity: 0;
+        animation: fadeInOut 5s infinite;
     }
+    @keyframes fadeInOut { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
 
-    /* --- MAIN CARD (Matches the Image) --- */
+    /* --- MAIN CARD --- */
     .card {
-        background: rgba(30, 30, 30, 0.9);
+        background: rgba(20, 20, 20, 0.85);
         padding: 40px 20px;
         border-radius: 30px;
-        border: 3px solid #ff69b4; /* Pink Border */
-        box-shadow: 0 0 20px #ff69b4, inset 0 0 10px #ff69b4;
+        border: 3px solid #ff69b4;
+        box-shadow: 0 0 30px #ff69b4;
         text-align: center;
         width: 85%;
         max-width: 380px;
@@ -72,21 +93,19 @@ custom_content = """
         position: relative;
     }
 
-    h1 {
+    /* Typewriter Effect */
+    .typewriter h1 {
+        overflow: hidden;
+        border-right: .15em solid #ff69b4;
+        white-space: nowrap;
+        margin: 0 auto;
+        letter-spacing: .10em;
+        animation: typing 3.5s steps(30, end), blink-caret .5s step-end infinite;
         font-family: 'Dancing Script', cursive;
-        font-size: 2.2rem;
         color: white;
-        margin-bottom: 20px;
-        text-shadow: 0 0 10px #ff4b4b;
     }
-
-    .btn-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-        margin-top: 20px;
-    }
+    @keyframes typing { from { width: 0 } to { width: 100% } }
+    @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: #ff69b4 } }
 
     button {
         width: 180px;
@@ -95,109 +114,101 @@ custom_content = """
         border-radius: 25px;
         border: none;
         font-weight: 600;
-        cursor: pointer;
         transition: 0.3s;
     }
 
     #yes-btn {
         background: #ff4b4b;
         color: white;
-        box-shadow: 0 4px 15px rgba(255, 75, 75, 0.5);
+        box-shadow: 0 0 20px #ff4b4b;
+        margin-top: 20px;
     }
 
     #no-btn {
-        background: #555;
-        color: #ddd;
-        position: absolute; /* Crucial for runaway logic */
-    }
-
-    /* Floating elements for second page */
-    .floating-heart {
+        background: #444;
+        color: #888;
         position: absolute;
-        animation: floatUp 5s linear infinite;
-        z-index: 5;
-    }
-    @keyframes floatUp {
-        from { transform: translateY(100vh); opacity: 1; }
-        to { transform: translateY(-10vh); opacity: 0; }
     }
 </style>
 
+<div id="cursor"></div>
 <div id="bg-layer"></div>
-<div class="teddy">🧸</div>
+
+<div class="teddy-container">
+    <div class="bubble" id="teddy-talk">Click Yes! 🐾</div>
+    <div class="teddy">🧸</div>
+</div>
 
 <div class="card" id="main-card">
-    <div id="content">
-        <p style="color: #ff69b4; font-size: 1.5rem; margin-bottom: 5px;">hi</p>
-        <h1>Will you be my Valentine, Halima? 🌹</h1>
-        <div class="btn-container">
-            <button id="yes-btn" onclick="celebrate()">Yes!</button>
-            <button id="no-btn" onmouseover="moveNo()" ontouchstart="moveNo()">No</button>
-        </div>
+    <div class="typewriter">
+        <p style="color: #ff69b4; font-size: 1.2rem;">Hello beautiful...</p>
+        <h1>Will you be mine?</h1>
+    </div>
+    <div style="margin-top:20px; font-family: 'Dancing Script'; font-size: 2rem; color: #ff69b4;">Halima 🌹</div>
+    
+    <div class="btn-container" style="height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <button id="yes-btn" onclick="celebrate()">Yes!</button>
+        <button id="no-btn" onmouseover="moveNo()" ontouchstart="moveNo()">No</button>
     </div>
 </div>
 
 <script>
-    const bg = document.getElementById('bg-layer');
+    // Cursor Movement
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    });
 
-    // Create background stars
-    for(let i=0; i<50; i++) {
-        let star = document.createElement('div');
-        star.style.position = 'absolute';
-        star.style.width = '2px';
-        star.style.height = '2px';
-        star.style.background = 'white';
-        star.style.left = Math.random() * 100 + 'vw';
-        star.style.top = Math.random() * 100 + 'vh';
-        star.style.opacity = Math.random();
-        bg.appendChild(star);
-    }
-
-    // Shooting stars
+    // Shooting Stars
     setInterval(() => {
         let s = document.createElement('div');
         s.className = 'shooting-star';
-        s.style.left = Math.random() * 50 + 'vw';
-        s.style.top = Math.random() * 50 + 'vh';
-        bg.appendChild(s);
+        s.style.left = Math.random() * 80 + 'vw';
+        s.style.top = Math.random() * 40 + 'vh';
+        document.getElementById('bg-layer').appendChild(s);
         setTimeout(() => s.remove(), 4000);
-    }, 2000);
+    }, 2500);
 
-    let alertShown = false;
+    let noCount = 0;
     function moveNo() {
+        noCount++;
         const btn = document.getElementById('no-btn');
-        const x = Math.random() * (window.innerWidth - 150);
-        const y = Math.random() * (window.innerHeight - 50);
-        btn.style.left = x + 'px';
-        btn.style.top = y + 'px';
-        btn.style.position = 'fixed'; // Pops it out of the card to move anywhere
+        btn.style.position = 'fixed';
+        btn.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+        btn.style.top = Math.random() * (window.innerHeight - 100) + 'px';
         
-        if (!alertShown) {
-            alert("You probably wish there was a 'maybe' answer 😂😆");
-            alertShown = true;
-        }
+        const teddyTalk = document.getElementById('teddy-talk');
+        if(noCount == 1) alert("You probably wish there was a 'maybe' answer 😂😆");
+        if(noCount == 3) teddyTalk.innerText = "Hey! Stop that! 😡";
+        if(noCount == 5) teddyTalk.innerText = "Just click YES already! 🙄";
     }
 
     function celebrate() {
         document.getElementById('main-card').innerHTML = `
-            <div style="animation: fadeIn 1s;">
-                <h1 style="font-size: 3rem;">YAY! ❤️</h1>
-                <p style="color: #fff;">I knew you'd say yes, Halima!</p>
-                <div style="font-size: 5rem; margin: 20px 0;">💖💍✨</div>
-                <p style="font-style: italic; color: #ff69b4;">Best. Valentine. Ever.</p>
+            <div style="animation: fadeIn 1.5s;">
+                <h1 style="font-family: 'Dancing Script'; font-size: 3.5rem; color: #ff69b4;">YAYYY! ❤️</h1>
+                <p style="color: white; font-size: 1.2rem;">You just made my year, Halima!</p>
+                <div style="font-size: 5rem; margin: 15px 0;">💖🌹✨</div>
+                <p style="color: #ff69b4; font-weight: bold;">See you on the 14th! 🏹</p>
             </div>
         `;
-        // Explosion of hearts
-        for(let i=0; i<40; i++) {
+        // Background Heart Explosion
+        setInterval(() => {
+            const h = document.createElement('div');
+            h.innerHTML = '❤️';
+            h.style.position = 'fixed';
+            h.style.left = Math.random() * 100 + 'vw';
+            h.style.top = '110vh';
+            h.style.fontSize = Math.random() * 30 + 10 + 'px';
+            h.style.transition = '5s linear';
+            document.body.appendChild(h);
             setTimeout(() => {
-                let h = document.createElement('div');
-                h.className = 'floating-heart';
-                h.innerHTML = '❤️';
-                h.style.left = Math.random() * 100 + 'vw';
-                h.style.fontSize = (Math.random() * 20 + 20) + 'px';
-                document.body.appendChild(h);
-            }, i * 100);
-        }
+                h.style.top = '-10vh';
+                h.style.left = (parseFloat(h.style.left) + (Math.random()*20 - 10)) + 'vw';
+            }, 10);
+            setTimeout(() => h.remove(), 5000);
+        }, 100);
     }
 </script>
 """
