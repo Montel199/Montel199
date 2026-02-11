@@ -1,132 +1,189 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# Set page config
 st.set_page_config(page_title="For Halima", layout="centered")
 
-# --- CUSTOM CSS & JAVASCRIPT ---
-# This includes the star background, the floating animation, and the "Runaway No" logic
-custom_html = """
+# Enhanced CSS/JS for Mobile and Aesthetics
+custom_content = """
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;600&display=swap');
 
     body {
         margin: 0;
-        background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+        background: radial-gradient(circle at top, #200122, #000000);
         overflow: hidden;
         height: 100vh;
-        font-family: 'Dancing Script', cursive;
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Poppins', sans-serif;
+        color: white;
     }
 
     /* Star Background */
-    .stars {
+    #star-container {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 100%;
         z-index: -1;
     }
 
-    /* Shooting Star Style */
-    .shooting-star {
+    .star {
         position: absolute;
-        height: 2px;
-        background: linear-gradient(-45deg, #ff4b4b, rgba(0,0,0,0));
-        filter: drop-shadow(0 0 6px #ff4b4b);
-        animation: tail 3s ease-in-out infinite, shooting 3s ease-in-out infinite;
+        background: white;
+        border-radius: 50%;
+        opacity: 0.5;
+        animation: twinkle var(--duration) infinite;
     }
 
-    @keyframes shooting {
-        0% { transform: translateX(0) translateY(0) rotate(45deg); }
-        100% { transform: translateX(-1000px) translateY(1000px) rotate(45deg); }
+    @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+    /* Floating Hearts */
+    .heart-bg {
+        position: absolute;
+        color: rgba(255, 75, 75, 0.3);
+        font-size: 20px;
+        animation: floatUp 6s linear infinite;
+        z-index: -1;
     }
 
-    .container {
+    @keyframes floatUp {
+        0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    .card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 40px 20px;
+        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
         text-align: center;
-        margin-top: 20vh;
-        color: white;
+        width: 85%;
+        max-width: 400px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
-    .question {
-        font-size: 3rem;
-        color: #ff4b4b;
-        text-shadow: 0 0 10px rgba(255, 75, 75, 0.8);
-        padding: 20px;
+    h1 {
+        font-family: 'Dancing Script', cursive;
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+        background: linear-gradient(to right, #ff416c, #ff4b2b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
     .btn-container {
-        display: flex;
-        justify-content: center;
-        gap: 50px;
-        margin-top: 50px;
+        position: relative;
+        height: 150px; /* Space for the runaway button */
     }
 
     button {
-        padding: 15px 30px;
-        font-size: 1.5rem;
-        border-radius: 20px;
+        padding: 12px 35px;
+        font-size: 1.2rem;
+        border-radius: 50px;
         border: none;
-        cursor: pointer;
+        font-weight: 600;
         transition: 0.3s;
+        touch-action: manipulation;
     }
 
     #yes-btn {
-        background-color: #ff4b4b;
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
         color: white;
-        box-shadow: 0 0 15px #ff4b4b;
+        box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
     }
 
     #no-btn {
         position: absolute;
-        background-color: #555;
-        color: white;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: #888;
+        white-space: nowrap;
     }
+
+    .success-msg { animation: fadeIn 2s; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
 
-<div class="stars" id="star-container"></div>
+<div id="star-container"></div>
+<div id="heart-container"></div>
 
-<div class="container" id="main-content">
-    <h1 class="question">Will you be my Valentine, Halima? 🌹</h1>
-    <div class="btn-container">
-        <button id="yes-btn" onclick="celebrate()">Yes!</button>
-        <button id="no-btn" onmouseover="moveNo()">No</button>
+<div class="card" id="main-card">
+    <div id="content">
+        <h1>Will you be my Valentine, Halima? 🌹</h1>
+        <div class="btn-container">
+            <button id="yes-btn" onclick="celebrate()">Yes!</button>
+            <button id="no-btn" onmouseover="moveNo()" ontouchstart="moveNo()">No</button>
+        </div>
     </div>
 </div>
 
 <script>
-    // Create stars
-    const container = document.getElementById('star-container');
-    for (let i = 0; i < 100; i++) {
+    // Create Twinkling Stars
+    const stars = document.getElementById('star-container');
+    for (let i = 0; i < 80; i++) {
         const star = document.createElement('div');
-        star.className = 'shooting-star';
-        star.style.top = Math.random() * 100 + 'vh';
-        star.style.left = Math.random() * 100 + 'vw';
-        star.style.animationDelay = Math.random() * 5 + 's';
-        container.appendChild(star);
+        star.className = 'star';
+        star.style.width = star.style.height = Math.random() * 3 + 'px';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.setProperty('--duration', Math.random() * 3 + 2 + 's');
+        stars.appendChild(star);
     }
 
-    // Runaway No Button Logic
+    // Floating Hearts background
+    setInterval(() => {
+        const heart = document.createElement('div');
+        heart.className = 'heart-bg';
+        heart.innerHTML = '❤️';
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.fontSize = Math.random() * 20 + 10 + 'px';
+        document.getElementById('heart-container').appendChild(heart);
+        setTimeout(() => heart.remove(), 6000);
+    }, 500);
+
+    let alertShown = false;
+
     function moveNo() {
-        const noBtn = document.getElementById('no-btn');
-        const x = Math.random() * (window.innerWidth - 100);
-        const y = Math.random() * (window.innerHeight - 100);
-        noBtn.style.left = x + 'px';
-        noBtn.style.top = y + 'px';
+        const btn = document.getElementById('no-btn');
+        // Calculate random position within the card boundaries
+        const maxX = window.innerWidth - 100;
+        const maxY = window.innerHeight - 50;
         
-        if (!window.alertDone) {
-            alert("You probably wish there was a 'Maybe' answer! 😂😆");
-            window.alertDone = true;
+        btn.style.position = 'fixed';
+        btn.style.left = Math.random() * maxX + 'px';
+        btn.style.top = Math.random() * maxY + 'px';
+
+        if (!alertShown) {
+            alert("You probably wish there was a 'maybe' answer 😂😆");
+            alertShown = true;
         }
     }
 
-    // Celebration Page Logic
     function celebrate() {
-        document.getElementById('main-content').innerHTML = `
-            <h1 class="question">YAY! See you on the 14th, Halima! ❤️</h1>
-            <p style="font-size: 1.5rem;">You've made me the luckiest person!</p>
-            <div style="font-size: 5rem;">✨🎆💖💍</div>
+        document.getElementById('main-card').innerHTML = `
+            <div class="success-msg">
+                <h1 style="font-size: 3rem;">❤️ Yay! ❤️</h1>
+                <p style="font-size: 1.2rem;">My heart is all yours now, Halima.</p>
+                <div style="font-size: 4rem; margin-top: 20px;">🎊💍✨</div>
+                <p style="margin-top: 20px; font-style: italic; opacity: 0.8;">I can't wait to celebrate with you!</p>
+            </div>
         `;
+        // Add extra confetti-like hearts
+        for(let i=0; i<30; i++) {
+            setTimeout(() => {
+                const h = document.createElement('div');
+                h.className = 'heart-bg';
+                h.innerHTML = '💖';
+                h.style.left = Math.random() * 100 + 'vw';
+                h.style.color = '#ff4b4b';
+                document.getElementById('heart-container').appendChild(h);
+            }, i * 100);
+        }
     }
 </script>
 """
 
-# Injecting the component
-components.html(custom_html, height=800, scrolling=False)
+components.html(custom_content, height=700)
