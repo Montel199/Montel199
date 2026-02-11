@@ -3,7 +3,7 @@ import streamlit.components.v1 as components
 
 st.set_page_config(page_title="For Halima", layout="centered")
 
-# Final Polish: Sliding Drawer, Typewriter, and Premium UI
+# Added Feature 2 (Sparkle Trail) and Feature 3 (Talking No Button)
 custom_content = """
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;600&display=swap');
@@ -32,6 +32,21 @@ custom_content = """
         z-index: 9999;
         transform: translate(-50%, -50%);
         box-shadow: 0 0 20px #ff69b4, 0 0 40px #ff1493;
+    }
+
+    /* Feature 2: Sparkle Particles Style */
+    .sparkle {
+        position: fixed;
+        width: 6px;
+        height: 6px;
+        background: #ff69b4;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9998;
+        animation: fadeOut 1s forwards;
+    }
+    @keyframes fadeOut {
+        to { opacity: 0; transform: scale(0.1); }
     }
 
     /* --- BACKGROUND ELEMENTS --- */
@@ -82,6 +97,7 @@ custom_content = """
         font-weight: bold;
         box-shadow: 0 10px 20px rgba(255, 20, 147, 0.4);
         animation: heartbeat 1.5s infinite;
+        cursor: pointer;
     }
     @keyframes heartbeat {
         0% { transform: scale(1); }
@@ -91,11 +107,13 @@ custom_content = """
 
     #no-btn {
         background: rgba(255, 255, 255, 0.1);
-        color: #888;
+        color: white;
         padding: 10px 30px;
         border-radius: 50px;
         border: 1px solid rgba(255,255,255,0.2);
         position: absolute;
+        transition: 0.2s;
+        white-space: nowrap;
     }
 
     /* --- SLIDE DRAWER --- */
@@ -156,10 +174,30 @@ custom_content = """
 
 <script>
     const cursor = document.getElementById('cursor');
+    
+    // Feature 2: Sparkle Trail Logic
     document.addEventListener('mousemove', e => {
         cursor.style.left = e.clientX + 'px';
         cursor.style.top = e.clientY + 'px';
+        createSparkle(e.clientX, e.clientY);
     });
+
+    // Touch support for Sparkle Trail
+    document.addEventListener('touchmove', e => {
+        const touch = e.touches[0];
+        cursor.style.left = touch.clientX + 'px';
+        cursor.style.top = touch.clientY + 'px';
+        createSparkle(touch.clientX, touch.clientY);
+    });
+
+    function createSparkle(x, y) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.style.left = x + 'px';
+        sparkle.style.top = y + 'px';
+        document.body.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 1000);
+    }
 
     // Shooting Stars
     setInterval(() => {
@@ -171,11 +209,19 @@ custom_content = """
         setTimeout(() => s.remove(), 4000);
     }, 2000);
 
+    // Feature 3: Talking No Button Logic
+    let noMessages = ["No", "Are you sure? 🤨", "Wrong button! ❌", "Try again! 😂", "Halima pls... 🥺", "Nope! 🏃‍♂️"];
+    let noCount = 0;
+
     function moveNo() {
         const btn = document.getElementById('no-btn');
         btn.style.position = 'fixed';
         btn.style.left = Math.random() * (window.innerWidth - 100) + 'px';
         btn.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+        
+        // Update button text
+        noCount++;
+        btn.innerText = noMessages[noCount % noMessages.length];
     }
 
     function toggleDrawer() {
@@ -190,7 +236,7 @@ custom_content = """
                 <div style="font-size: 4rem;">💖✨💍</div>
                 <hr style="border: 0; border-top: 1px solid #ff69b4; margin: 20px 0;">
                 <p style="color: #ff69b4;">Guess nini Wambooo? 🤔</p>
-                <button onclick="toggleDrawer()" style="background:#ff69b4; color:white; border:none; width:50px; height:50px; border-radius:50%; font-size:1.5rem; margin-top:10px;">?</button>
+                <button onclick="toggleDrawer()" style="background:#ff69b4; color:white; border:none; width:50px; height:50px; border-radius:50%; font-size:1.5rem; margin-top:10px; cursor:pointer;">?</button>
             </div>
         `;
         
